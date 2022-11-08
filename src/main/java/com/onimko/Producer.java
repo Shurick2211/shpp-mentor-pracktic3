@@ -12,7 +12,9 @@ public class Producer {
     private Connection connection;
     private Session session;
     private static final Logger log = LoggerFactory.getLogger(Producer.class);
+    public static final String QUEUE = "MyQueue";
     public Producer() {
+
 
         try {
             ActiveMQConnectionFactory conFactory =
@@ -23,7 +25,7 @@ public class Producer {
             session = connection.createSession(false,
                     Session.AUTO_ACKNOWLEDGE);
 
-            Destination destination = session.createQueue("MuQueue");
+            Destination destination = session.createQueue(QUEUE);
 
             producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -40,8 +42,7 @@ public class Producer {
             message.setText(msg);
             producer.send(message);
         } catch (JMSException e) {
-            log.error("Message don't send",e);
-            throw new RuntimeException(e);
+            log.warn("Message don't send",e);
         }
         return this;
     }
@@ -51,9 +52,8 @@ public class Producer {
             session.close();
             connection.close();
         } catch (JMSException e) {
-            log.error("Connection & session don't send",e);
+            log.error("Producer connection & session don't stopped!",e);
             throw new RuntimeException(e);
         }
-
     }
 }

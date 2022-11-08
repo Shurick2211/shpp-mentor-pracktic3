@@ -14,6 +14,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
             Producer producer = new Producer();
+            Consumer consumer = new Consumer();
 
             BufferedReader b = new BufferedReader(new InputStreamReader(System.in));
 
@@ -25,9 +26,11 @@ public class Main {
                     break;
                 producer.sendMessage(s);
                 System.out.println("Message successfully sent.");
+                System.out.println("Received:" + consumer.receiveMessage());
             }
 
             producer.stop();
+            consumer.stop();
     }
 
 }
