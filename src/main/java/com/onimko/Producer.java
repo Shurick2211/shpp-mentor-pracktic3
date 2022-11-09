@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 
 public class Producer {
-    private MessageProducer messageProducer;
-    private  TextMessage message;
-    private Connection connection;
-    private Session session;
+    private final MessageProducer messageProducer;
+    private final TextMessage message;
+    private final Connection connection;
+    private final Session session;
     private static final Logger log = LoggerFactory.getLogger(Producer.class);
     public static final String QUEUE = "MyQueue";
     public Producer(String url, String user, String pass) {
@@ -42,6 +42,7 @@ public class Producer {
         try {
             message.setText(msg);
             messageProducer.send(message);
+            log.debug("Message was send! {}",msg);
         } catch (JMSException e) {
             log.warn("Message don't send",e);
         }
