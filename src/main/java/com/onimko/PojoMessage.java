@@ -7,10 +7,10 @@ public class PojoMessage {
     int count;
     LocalDateTime createdAt;
 
-    public PojoMessage(String name, int count) {
+    public PojoMessage(String name, int count, LocalDateTime createdAt) {
         this.name = name;
         this.count = count;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public String getName() {
@@ -25,4 +25,12 @@ public class PojoMessage {
         return createdAt;
     }
 
+    @Override
+    public String toString() {
+        return "pojo{" +
+                "name=\"" + name + '\"' +
+                ", count=" + count +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

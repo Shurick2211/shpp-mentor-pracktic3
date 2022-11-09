@@ -7,18 +7,18 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 
 public class Producer {
-    private MessageProducer producer;
-    private TextMessage message;
+    private MessageProducer messageProducer;
+    private  TextMessage message;
     private Connection connection;
     private Session session;
     private static final Logger log = LoggerFactory.getLogger(Producer.class);
     public static final String QUEUE = "MyQueue";
-    public Producer() {
-
-
+    public Producer(String url, String user, String pass) {
         try {
             ActiveMQConnectionFactory conFactory =
-                    new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_BROKER_URL);
+                    new ActiveMQConnectionFactory(url);
+            conFactory.setUserName(user);
+            conFactory.setPassword(pass);
 
             connection = conFactory.createConnection();
             connection.start();
@@ -27,20 +27,21 @@ public class Producer {
 
             Destination destination = session.createQueue(QUEUE);
 
-            producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            messageProducer = session.createProducer(destination);
+            messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
             message = session.createTextMessage();
+            log.debug("Consumer was started!");
         }catch (JMSException e) {
             log.error("Error of Producer",e);
-            throw new RuntimeException(e);
+            throw new MyRuntimeException(e);
         }
     }
 
     public Producer sendMessage(String msg) {
         try {
             message.setText(msg);
-            producer.send(message);
+            messageProducer.send(message);
         } catch (JMSException e) {
             log.warn("Message don't send",e);
         }
@@ -53,7 +54,7 @@ public class Producer {
             connection.close();
         } catch (JMSException e) {
             log.error("Producer connection & session don't stopped!",e);
-            throw new RuntimeException(e);
+            throw new MyRuntimeException(e);
         }
     }
 }

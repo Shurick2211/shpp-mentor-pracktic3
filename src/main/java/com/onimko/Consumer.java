@@ -8,22 +8,25 @@ import javax.jms.*;
 import javax.jms.Message;
 
 public class Consumer {
-    private MessageConsumer consumer;
+    private MessageConsumer messageConsumer;
     private Connection connection;
     private Session session;
     private static final Logger log = LoggerFactory.getLogger(Consumer.class);
 
 
-    public Consumer() {
+    public Consumer(String url, String user, String pass) {
         try {
-            ConnectionFactory connectionFactory =
-                    new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_BROKER_URL);
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+            connectionFactory.setUserName(user);
+            connectionFactory.setPassword(pass);
+
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(false,
                     Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createQueue(Producer.QUEUE);
-            consumer = session.createConsumer(destination);
+            messageConsumer = session.createConsumer(destination);
+            log.debug("Consumer was created!");
         } catch (JMSException e) {
             log.error("Consumer wasn't connection!", e);
         }
@@ -31,9 +34,10 @@ public class Consumer {
 
     public String receiveMessage(){
         try{
-            Message message = consumer.receive();
+            Message message = messageConsumer.receive();
             if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
+                log.debug("Message was received: {}", textMessage.getText());
                 return textMessage.getText();
             }
         } catch (JMSException e) {
@@ -49,7 +53,7 @@ public class Consumer {
             connection.close();
         } catch (JMSException e) {
             log.error("Consumer connection & session don't stopped!",e);
-            throw new RuntimeException(e);
+            throw new MyRuntimeException(e);
         }
     }
 }
