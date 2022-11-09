@@ -1,4 +1,4 @@
-package com.onimko;
+package com.onimko.util;
 
 import java.io.IOException;
 

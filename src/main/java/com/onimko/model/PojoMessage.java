@@ -1,6 +1,7 @@
-package com.onimko;
+package com.onimko.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class PojoMessage {
     String name;
@@ -23,6 +24,19 @@ public class PojoMessage {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PojoMessage)) return false;
+        PojoMessage that = (PojoMessage) o;
+        return getCount() == that.getCount() && getName().equals(that.getName()) && Objects.equals(getCreatedAt(), that.getCreatedAt());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getCount(), getCreatedAt());
     }
 
     @Override

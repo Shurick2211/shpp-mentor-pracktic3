@@ -1,6 +1,9 @@
 package com.onimko;
 
 
+import com.onimko.broker.Consumer;
+import com.onimko.broker.Producer;
+import com.onimko.util.LoadProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +14,8 @@ import java.io.InputStreamReader;
 public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
-
+    private static final LoadProperties properties = new LoadProperties("myAws.properties");
     public static void main(String[] args) throws IOException {
-        LoadProperties properties = new LoadProperties("my.properties");
 
         Producer producer = new Producer(properties.getProperty("aws.broker.url"),
                 properties.getProperty("aws.broker.user"),
@@ -23,7 +25,6 @@ public class Main {
                 properties.getProperty("aws.broker.pass"));
 
         BufferedReader b = new BufferedReader(new InputStreamReader(System.in));
-
         while(true)
         {
             System.out.println("Enter Msg, end to terminate:");
