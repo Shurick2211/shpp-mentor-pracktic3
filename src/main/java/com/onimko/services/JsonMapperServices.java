@@ -8,8 +8,6 @@ import com.onimko.pojo.PojoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStreamReader;
-
 public class JsonMapperServices {
     private static final Logger log = LoggerFactory.getLogger(JsonMapperServices.class);
     private static ObjectMapper mapper = new ObjectMapper();
