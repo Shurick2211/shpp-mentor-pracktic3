@@ -1,6 +1,6 @@
 package com.onimko.services;
 
-import com.onimko.model.PojoMessage;
+import com.onimko.pojo.PojoMessage;
 
 import java.time.LocalDateTime;
 import java.util.Random;

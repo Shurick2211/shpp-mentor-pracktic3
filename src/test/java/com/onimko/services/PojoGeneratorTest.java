@@ -1,6 +1,6 @@
 package com.onimko.services;
 
-import com.onimko.model.PojoMessage;
+import com.onimko.pojo.PojoMessage;
 import junit.framework.TestCase;
 
 public class PojoGeneratorTest extends TestCase {
