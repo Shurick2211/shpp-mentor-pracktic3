@@ -2,14 +2,20 @@ package com.onimko.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class PojoMessage{
-    private String name;
-    private int count;
-    private LocalDateTime createdAt;
+    @NotNull
+    @Size(min = 7)
+    @Pattern(regexp = "\\w*[a]+\\w*")
+    private final String name;
+    @Min(value = 10)
+    private final int count;
+    @PastOrPresent
+    private final LocalDateTime createdAt;
     public PojoMessage(@JsonProperty(value = "name")String name, @JsonProperty(value = "count")int count,
                        @JsonProperty(value = "created_at")
                        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
