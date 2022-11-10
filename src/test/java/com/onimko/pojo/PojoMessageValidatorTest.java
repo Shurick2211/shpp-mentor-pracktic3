@@ -18,6 +18,7 @@ public class PojoMessageValidatorTest extends TestCase {
 
     public void testValidName() {
         errors.forEach(e-> System.out.println(e.getMessage()+" value = "+e.getInvalidValue()));
+
     }
 
     public void testValidCount() {
