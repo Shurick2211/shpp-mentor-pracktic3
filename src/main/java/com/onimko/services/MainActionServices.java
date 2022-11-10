@@ -16,6 +16,7 @@ public class MainActionServices {
     private Producer producer;
     private Consumer consumer;
     private ConsumerServices consumerServices;
+    private MyStopWatch stopWatch;
 
     public MainActionServices(int n) {
         this.n = n;
@@ -24,6 +25,7 @@ public class MainActionServices {
     public void action(){
         createProducer();
         setConsumerAndServices();
+        createAndRunStopWatch();
         generateMessage();
         end();
     }
@@ -42,12 +44,15 @@ public class MainActionServices {
         consumerServices.start();
         log.info("Consumer was create and run!");
     }
-    private void generateMessage() {
-        MyStopWatch stopWatch = new MyStopWatch(
+
+    private void createAndRunStopWatch() {
+        stopWatch = new MyStopWatch(
                 Integer.parseInt(properties.getProperty("second")));
         stopWatch.start();
         log.info("Stopwatch was started!");
+    }
 
+    private void generateMessage() {
         Stream.generate(PojoGenerator::getPojo).limit(n).takeWhile(p -> !stopWatch.isEndsCont())
                 .forEach(p -> producer.sendMessage(JsonMapperServices.toJson(p)));
         log.info("Messages was sent!");
