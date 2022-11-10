@@ -1,5 +1,9 @@
 package com.onimko.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.onimko.broker.Consumer;
 import com.onimko.pojo.PojoMessage;
 import jakarta.validation.ConstraintViolation;
@@ -9,13 +13,17 @@ import jakarta.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 
 public class ConsumerServices  extends Thread{
 
     private static final String SEPARATOR = ",";
     private static final Logger log = LoggerFactory.getLogger(ConsumerServices.class);
-    private Consumer consumer;
+    private final Consumer consumer;
+    boolean isStop;
 
     private static final String VALID = "validPOJO.csv";
 
@@ -31,29 +39,43 @@ public class ConsumerServices  extends Thread{
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<PojoMessage>> errors;
-        while (!isInterrupted()){
-           pojo = JsonMapperServices.toPojo(consumer.receiveMessage());
-           errors = validator.validate(pojo);
-           if (errors.isEmpty()) saveCSVPojo(pojo);
-           else saveCSVError(pojo, errors);
+        try(FileWriter writer = new FileWriter(VALID, false);
+            FileWriter writerError = new FileWriter(INVALID, false)) {
+            while (!isStop) {
+                pojo = JsonMapperServices.toPojo(consumer.receiveMessage());
+                errors = validator.validate(pojo);
+                if (errors.isEmpty()) writer.append(saveCSVPojo(pojo));
+                else writerError.append(saveCSVError(pojo, errors));
+            }
+            writerError.flush();
+            writer.flush();
+        }catch (IOException e){
+            log.error("Error writing CSV",e);
         }
     }
 
-    private void saveCSVError(PojoMessage pojo, Set<ConstraintViolation<PojoMessage>> errors) {
+    private String saveCSVError(PojoMessage pojo, Set<ConstraintViolation<PojoMessage>> errors) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.registerModule(new JavaTimeModule());
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("{\"errors\":[");
-        stringBuilder.append(errors.stream().map(ConstraintViolation::getMessage).reduce((a,b) -> a + ", " + b).get());
-        stringBuilder.append("]}");
-        String str = pojo.getName() + SEPARATOR + pojo.getCount() + SEPARATOR + stringBuilder;
-        log.info(str);
+        stringBuilder.append("\"{\"errors\":");
+        try {
+            stringBuilder.append(mapper.writeValueAsString(
+                    Arrays.toString(errors.toArray())
+                    ));
+        } catch (JsonProcessingException e) {
+            log.warn("Don't write errors" ,e);
+        }
+        stringBuilder.append("}\"\n");
+        return pojo.getName() + SEPARATOR + pojo.getCount() + SEPARATOR + stringBuilder;
     }
 
-    private void saveCSVPojo(PojoMessage pojo) {
-        String str = pojo.getName() + SEPARATOR + pojo.getCount();
-        log.info(str);
+    private String saveCSVPojo(PojoMessage pojo) {
+        return pojo.getName() + SEPARATOR + pojo.getCount()+"\n";
     }
 
     public void stopServices(){
-        this.interrupt();
+        isStop = true;
     }
 }
