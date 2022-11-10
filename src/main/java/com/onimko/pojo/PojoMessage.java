@@ -15,10 +15,7 @@ import java.util.Objects;
 public class PojoMessage{
     private String name;
     private int count;
-
     private LocalDateTime createdAt;
-
-
     public PojoMessage(@JsonProperty(value = "name")String name, @JsonProperty(value = "count")int count,
                        @JsonProperty(value = "created_at")
                        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
