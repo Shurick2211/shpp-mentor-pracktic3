@@ -11,35 +11,34 @@ import java.util.stream.Stream;
 
 public class MainActionServices {
     private static final Logger log = LoggerFactory.getLogger(MainActionServices.class);
-    private static final LoadProperties properties = new LoadProperties("myApp.properties");
+    private static final String URL = "aws.broker.url";
+    private static final String USER = "aws.broker.user";
+    private static final String PASS = "aws.broker.pass";
+    private final LoadProperties properties;
     private final int n;
     private Producer producer;
     private Consumer consumer;
     private ConsumerServices consumerServices;
     private MyStopWatch stopWatch;
 
-    public MainActionServices(int n) {
+    public MainActionServices(int n, String propFile) {
         this.n = n;
-    }
-
-    public void action(){
+        properties = new LoadProperties(propFile);
         createProducer();
         setConsumerAndServices();
         createAndRunStopWatch();
-        generateMessage();
-        end();
     }
 
     private void createProducer(){
-        producer = new Producer(properties.getProperty("aws.broker.url"),
-                properties.getProperty("aws.broker.user"),
-                properties.getProperty("aws.broker.pass"));
+        producer = new Producer(properties.getProperty(URL),
+                properties.getProperty(USER),
+                properties.getProperty(PASS));
         log.info("Producer was create!");
     }
     private void setConsumerAndServices(){
-        consumer = new Consumer(properties.getProperty("aws.broker.url"),
-                properties.getProperty("aws.broker.user"),
-                properties.getProperty("aws.broker.pass"));
+        consumer = new Consumer(properties.getProperty(URL),
+                properties.getProperty(USER),
+                properties.getProperty(PASS));
         consumerServices = new ConsumerServices(consumer);
         consumerServices.start();
         log.info("Consumer was create and run!");
@@ -52,10 +51,11 @@ public class MainActionServices {
         log.info("Stopwatch was started!");
     }
 
-    private void generateMessage() {
+    public void generateMessage() {
         Stream.generate(PojoGenerator::getPojo).limit(n).takeWhile(p -> !stopWatch.isEndsCont())
                 .forEach(p -> producer.sendMessage(JsonMapperServices.toJson(p)));
         log.info("Messages was sent!");
+        end();
     }
 
     private void end(){
