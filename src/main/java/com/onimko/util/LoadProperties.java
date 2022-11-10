@@ -14,9 +14,6 @@ public class LoadProperties {
     /**The logger for this class*/
     private static final Logger log = LoggerFactory.getLogger(LoadProperties.class);
 
-    /**The name of System property*/
-    private static final String TYPE = "type";
-
     /**The Properties for reading*/
     private final Properties props;
 
@@ -45,16 +42,5 @@ public class LoadProperties {
     public String getProperty(String inProp) {
         log.debug("Return property: {}", inProp);
         return props.getProperty(inProp);
-    }
-
-    /**
-     * Method gets system's property with name in the const TYPE.
-     * If type is null then return default value - int.
-     * @return String - property.
-     */
-    public String getTypeProperty() {
-        String sysProp = System.getProperty(TYPE);
-        log.debug("System property: {}", sysProp != null ? sysProp : "default");
-        return sysProp != null ? sysProp : "int";
     }
 }

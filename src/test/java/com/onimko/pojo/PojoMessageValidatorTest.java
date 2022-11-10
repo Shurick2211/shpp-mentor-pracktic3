@@ -10,20 +10,39 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public class PojoMessageValidatorTest extends TestCase {
-    PojoMessage pojoMessage = new PojoMessage("f",10,
-            LocalDateTime.of(2020,5,5,5,5));
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
-    Set<ConstraintViolation<PojoMessage>> errors = validator.validate(pojoMessage);
+
+    private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    public final Validator validator = factory.getValidator();
+
 
     public void testValidName() {
-        errors.forEach(e-> System.out.println(e.getMessage()+" value = "+e.getInvalidValue()));
+        PojoMessage pojoMessage = new PojoMessage("fa",10,
+                LocalDateTime.of(2020,5,5,5,5));
+        Set<ConstraintViolation<PojoMessage>> errors = validator.validate(pojoMessage);
+        assertEquals(1, errors.size());
+        assertEquals("name", errors.iterator().next().getPropertyPath().toString());
+
+        pojoMessage = new PojoMessage("fhtrhykk8o980",10,
+                LocalDateTime.of(2020,5,5,5,5));
+        errors = validator.validate(pojoMessage);
+        assertEquals(1, errors.size());
+        assertEquals("name", errors.iterator().next().getPropertyPath().toString());
 
     }
 
     public void testValidCount() {
+        PojoMessage pojoMessage = new PojoMessage("fanhftyurkf",2,
+                LocalDateTime.of(2020,5,5,5,5));
+        Set<ConstraintViolation<PojoMessage>> errors = validator.validate(pojoMessage);
+        assertEquals(1, errors.size());
+        assertEquals("count", errors.iterator().next().getPropertyPath().toString());
     }
 
     public void testValidCreatedAt() {
+        PojoMessage pojoMessage = new PojoMessage("fanhftyurkf",10,
+                LocalDateTime.of(2025,5,5,5,5));
+        Set<ConstraintViolation<PojoMessage>> errors = validator.validate(pojoMessage);
+        assertEquals(1, errors.size());
+        assertEquals("createdAt", errors.iterator().next().getPropertyPath().toString());
     }
 }
