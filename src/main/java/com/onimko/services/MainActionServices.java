@@ -57,15 +57,15 @@ public class MainActionServices {
     }
 
     public Stream<PojoMessage> generateMessage() {
+        PojoGenerator pojoGenerator = new PojoGenerator();
         createAndRunStopWatch();
-        return  Stream.generate(PojoGenerator::getPojo).limit(n).takeWhile(p -> !stopWatch.isEndsCont());
+        return  Stream.generate(pojoGenerator::getPojo).limit(n).takeWhile(p -> !stopWatch.isEndsCont());
     }
 
-    public boolean sendMessage(){
+    public void sendMessage(){
         generateMessage().forEach(p -> producer.sendMessage(JsonMapperServices.toJson(p)));
         log.info("Messages was sent!");
         end();
-        return true;
     }
 
     private void end(){

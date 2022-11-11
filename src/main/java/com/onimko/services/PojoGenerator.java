@@ -6,21 +6,22 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 public class PojoGenerator {
-    private static int count = 1;
+    private int count;
     private static final int MIN_SIZE = 1;
     private static final int DELTA_NAME_SIZE = 15;
     private static final int DELTA_ALPHABET = 26;
     private static final int START_ALPHABET = 'a';
     private static final Random random = new Random();
 
-    private PojoGenerator() {
+    public PojoGenerator() {
+        count = 1;
     }
 
-    public static PojoMessage getPojo(){
+    public PojoMessage getPojo(){
         return new PojoMessage(genName(), genCount(), genDataTime());
     }
 
-    private static LocalDateTime genDataTime() {
+    private  LocalDateTime genDataTime() {
         final int year = 2050;
         final int month = 12;
         final int day = 28;
@@ -34,11 +35,11 @@ public class PojoGenerator {
                 MIN_SIZE + random.nextInt(minutes - MIN_SIZE));
     }
 
-    private static int genCount() {
+    private int genCount() {
         return count++;
     }
 
-    private static String genName() {
+    private String genName() {
         StringBuilder name = new StringBuilder("");
         int size = MIN_SIZE + random.nextInt(DELTA_NAME_SIZE);
         for (int i = 0; i < size; i++) {

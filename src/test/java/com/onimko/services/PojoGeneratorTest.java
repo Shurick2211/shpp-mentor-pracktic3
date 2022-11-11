@@ -7,14 +7,15 @@ public class PojoGeneratorTest extends TestCase {
 
     public void testGetPojo() {
         PojoMessage msg = null;
+        PojoGenerator generator = new PojoGenerator();
         for (int i = 0; i < 150; i++) {
-            msg = PojoGenerator.getPojo();
+            msg = generator.getPojo();
             assertNotNull(msg);
         }
         assertNotNull(msg);
         assertEquals(msg.getClass(), PojoMessage.class);
         assertNotNull(msg.getName());
         assertNotNull(msg.getCreatedAt());
-        assertEquals(153, msg.getCount());
+        assertEquals(150, msg.getCount());
     }
 }
