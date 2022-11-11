@@ -9,6 +9,6 @@ public class Main {
         MainActionServices services =
                 new MainActionServices(args.length == 0 ? MIN_GEN: Integer.parseInt(args[0]),
                         PROPERTIES);
-        services.generateMessage();
+        services.sendMessage();
     }
 }

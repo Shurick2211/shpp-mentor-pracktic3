@@ -11,6 +11,10 @@ public class PojoGeneratorTest extends TestCase {
             msg = PojoGenerator.getPojo();
             assertNotNull(msg);
         }
+        assertNotNull(msg);
+        assertEquals(msg.getClass(), PojoMessage.class);
+        assertNotNull(msg.getName());
+        assertNotNull(msg.getCreatedAt());
         assertEquals(150, msg.getCount());
     }
 }

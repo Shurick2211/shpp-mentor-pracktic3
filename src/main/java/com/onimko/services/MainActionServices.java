@@ -2,6 +2,7 @@ package com.onimko.services;
 
 import com.onimko.broker.Consumer;
 import com.onimko.broker.Producer;
+import com.onimko.pojo.PojoMessage;
 import com.onimko.util.LoadProperties;
 import com.onimko.util.MyStopWatch;
 import org.slf4j.Logger;
@@ -25,8 +26,7 @@ public class MainActionServices {
         this.n = n;
         properties = new LoadProperties(propFile);
         createProducer();
-        setConsumerAndServices();
-        createAndRunStopWatch();
+        runConsumerAndServices();
     }
 
     private void createProducer(){
@@ -35,7 +35,7 @@ public class MainActionServices {
                 properties.getProperty(PASS));
         log.info("Producer was create!");
     }
-    private void setConsumerAndServices(){
+    private void runConsumerAndServices(){
         consumer = new Consumer(properties.getProperty(URL),
                 properties.getProperty(USER),
                 properties.getProperty(PASS));
@@ -51,11 +51,16 @@ public class MainActionServices {
         log.info("Stopwatch was started!");
     }
 
-    public void generateMessage() {
-        Stream.generate(PojoGenerator::getPojo).limit(n).takeWhile(p -> !stopWatch.isEndsCont())
-                .forEach(p -> producer.sendMessage(JsonMapperServices.toJson(p)));
+    public Stream<PojoMessage> generateMessage() {
+        createAndRunStopWatch();
+        return  Stream.generate(PojoGenerator::getPojo).limit(n).takeWhile(p -> !stopWatch.isEndsCont());
+    }
+
+    public boolean sendMessage(){
+        generateMessage().forEach(p -> producer.sendMessage(JsonMapperServices.toJson(p)));
         log.info("Messages was sent!");
         end();
+        return true;
     }
 
     private void end(){
