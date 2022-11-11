@@ -2,8 +2,6 @@ package com.onimko.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.onimko.broker.Consumer;
 import com.onimko.pojo.PojoMessage;
 import jakarta.validation.ConstraintViolation;
@@ -19,16 +17,12 @@ import java.util.Arrays;
 import java.util.Set;
 
 public class ConsumerServices  extends Thread{
-
     private static final String SEPARATOR = ",";
     private static final Logger log = LoggerFactory.getLogger(ConsumerServices.class);
     private final Consumer consumer;
     boolean isStop;
-
     private static final String VALID = "validPOJO.csv";
-
     private static final String INVALID = "errorPOJO.csv";
-
     public ConsumerServices(Consumer consumer) {
         this.consumer = consumer;
     }
@@ -44,8 +38,8 @@ public class ConsumerServices  extends Thread{
             while (!isStop) {
                 pojo = JsonMapperServices.toPojo(consumer.receiveMessage());
                 errors = validator.validate(pojo);
-                if (errors.isEmpty()) writer.append(saveCSVPojo(pojo));
-                else writerError.append(saveCSVError(pojo, errors));
+                if (errors.isEmpty()) writer.append(stringCSVPojo(pojo));
+                else writerError.append(stringCSVError(pojo, errors));
             }
             writerError.flush();
             writer.flush();
@@ -54,24 +48,18 @@ public class ConsumerServices  extends Thread{
         }
     }
 
-    private String saveCSVError(PojoMessage pojo, Set<ConstraintViolation<PojoMessage>> errors) {
+    private String stringCSVError(PojoMessage pojo, Set<ConstraintViolation<PojoMessage>> errors) {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.registerModule(new JavaTimeModule());
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\"{\"errors\":");
+        String json = "";
         try {
-            stringBuilder.append(mapper.writeValueAsString(
-                    Arrays.toString(errors.toArray())
-                    ));
+            json = mapper.writeValueAsString("errors:" + Arrays.toString(errors.toArray()));
         } catch (JsonProcessingException e) {
             log.warn("Don't write errors" ,e);
         }
-        stringBuilder.append("}\"\n");
-        return pojo.getName() + SEPARATOR + pojo.getCount() + SEPARATOR + stringBuilder;
+        return pojo.getName() + SEPARATOR + pojo.getCount() + SEPARATOR + json + "\n";
     }
 
-    private String saveCSVPojo(PojoMessage pojo) {
+    private String stringCSVPojo(PojoMessage pojo) {
         return pojo.getName() + SEPARATOR + pojo.getCount()+"\n";
     }
 
