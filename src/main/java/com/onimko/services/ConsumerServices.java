@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Set;
 
 public class ConsumerServices  extends Thread{
@@ -52,7 +51,9 @@ public class ConsumerServices  extends Thread{
         ObjectMapper mapper = new ObjectMapper();
         String json = "";
         try {
-            json = mapper.writeValueAsString("errors:" + Arrays.toString(errors.toArray()));
+            json = mapper.writeValueAsString("{errors:["
+                    + errors.stream().map(e -> e.getPropertyPath().toString() + ":" + e.getMessage())
+                    .reduce((a,b) -> a + "," + b).orElse("")+"]}");
         } catch (JsonProcessingException e) {
             log.warn("Don't write errors" ,e);
         }
