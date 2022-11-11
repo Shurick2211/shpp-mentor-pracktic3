@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class JsonMapperServices {
     private static final Logger log = LoggerFactory.getLogger(JsonMapperServices.class);
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
     static {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new JavaTimeModule());
@@ -34,7 +34,7 @@ public class JsonMapperServices {
         try {
             pojo = mapper.readValue(json, PojoMessage.class);
         } catch (JsonProcessingException e) {
-            log.warn("Json error of to PojoMessage",e);
+            log.warn("Json error of toPojoMessage",e);
         }
         return pojo;
     }

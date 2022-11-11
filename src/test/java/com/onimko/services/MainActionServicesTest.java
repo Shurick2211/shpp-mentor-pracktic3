@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MainActionServicesTest extends TestCase {
-    MainActionServices services = new MainActionServices(3,"test.properties");
+    MainActionServices services = new MainActionServices("test.properties", 3);
     public void testGenerateMessage() {
         Stream<PojoMessage> stream = services.generateMessage();
         List<PojoMessage> list = stream.collect(Collectors.toList());
@@ -16,7 +16,5 @@ public class MainActionServicesTest extends TestCase {
         assertEquals(list.get(0).getClass(), PojoMessage.class);
         assertNotNull(list.get(list.size() - 1));
     }
-    public void testSendMessage() {
-        assertTrue(services.sendMessage());
-    }
+
 }

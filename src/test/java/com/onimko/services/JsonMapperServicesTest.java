@@ -2,7 +2,6 @@ package com.onimko.services;
 
 import com.onimko.pojo.PojoMessage;
 import junit.framework.TestCase;
-
 import java.time.LocalDateTime;
 
 public class JsonMapperServicesTest extends TestCase {
@@ -14,6 +13,7 @@ public class JsonMapperServicesTest extends TestCase {
     public void testToJson() {
         assertEquals(json, JsonMapperServices.toJson(pojoMessage));
     }
+
 
     public void testToPojo() {
        assertEquals(pojoMessage, JsonMapperServices.toPojo(json));

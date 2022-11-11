@@ -22,6 +22,11 @@ public class MainActionServices {
     private ConsumerServices consumerServices;
     private MyStopWatch stopWatch;
 
+    public MainActionServices(String properties, int n) {
+        this.properties = new LoadProperties(properties);
+        this.n = n;
+    }
+
     public MainActionServices(int n, String propFile) {
         this.n = n;
         properties = new LoadProperties(propFile);
